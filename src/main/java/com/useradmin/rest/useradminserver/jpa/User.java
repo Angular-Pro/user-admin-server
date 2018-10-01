@@ -1,6 +1,8 @@
 package com.useradmin.rest.useradminserver.jpa;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -12,7 +14,20 @@ public class User {
 
     private String userName;
 
+    private String password;
+
     private String email;
+
+    public User() {
+
+    }
+
+    public User(String name, String userName, String email, String password) {
+        this.name = name;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+    }
 
     @ManyToOne
     @JoinColumn(name = "address_id")
@@ -23,6 +38,12 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -78,5 +99,21 @@ public class User {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

@@ -4,6 +4,7 @@ import com.useradmin.rest.useradminserver.jpa.User;
 import com.useradmin.rest.useradminserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -15,18 +16,22 @@ public class UserResource {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @GetMapping("/users")
     public List<User> retrieveAllUsers(){
         return userRepository.findAll();
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/{id}")
     public void deleteStudent(@PathVariable long id) {
         userRepository.deleteById(id);
     }
 
-    @PostMapping("/users")
+    @PostMapping("/signup")
     public ResponseEntity<Object> createStudent(@RequestBody User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         User saveUser = userRepository.save(user);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
